@@ -1,0 +1,21 @@
+docker-build:
+  # Use the official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+  script:
+    - echo ' @@@@  Building Images ..... '
+    - cd dotnet-core/MicroserviceDotnetCore
+    - docker build --tag edgars/aulafinal-dotnetcore .
+    - docker push edgars/aulafinal-dotnetcore
+    - cd ../../java/springboot
+    - apk update
+    - apk add openjdk8
+    - apk add maven
+    - sh build.sh
+    - docker build --tag edgars/aulafinal-java .
+    - docker push edgars/aulafinal-java
+    - echo 'Done -- imagens ok !'
